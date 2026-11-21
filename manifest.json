@@ -1,0 +1,18 @@
+﻿{
+  "name": "Reset T6–T7 & Anneau Costal",
+  "short_name": "Reset T6-T7",
+  "description": "Protocole quotidien de déverrouillage thoracique T6-T7, intercostaux et ZOA diaphragmatique.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0f17",
+  "theme_color": "#0b0f17",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

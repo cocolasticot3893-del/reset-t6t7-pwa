@@ -1,0 +1,966 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0b0f17" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Reset T6–T7 & Anneau Costal</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --card: #131b2b;
+      --card-2: #192438;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --green: #34d399;
+      --amber: #f59e0b;
+      --red: #f87171;
+      --border: #24324d;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding-bottom: 84px;
+    }
+    header {
+      padding: 16px 18px 12px;
+      background: linear-gradient(180deg, #11192a 0%, var(--bg) 100%);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    h1 { font-size: 1.05rem; margin: 0; letter-spacing: 0.2px; }
+    .subtitle { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .badge {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--green);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .container { padding: 14px 16px; max-width: 540px; margin: 0 auto; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 15px;
+      margin-bottom: 14px;
+    }
+    .card h2 { font-size: 0.95rem; margin: 0 0 8px; color: var(--text); }
+    .row { display: flex; gap: 10px; align-items: center; }
+    .btn {
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform 0.08s ease, opacity 0.15s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--accent); color: #061320; }
+    .btn-express { background: var(--card-2); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.45); }
+    .btn-green { background: var(--green); color: #042117; }
+    .btn-ghost { background: var(--card-2); color: var(--text); border: 1px solid var(--border); }
+    .btn-sm { padding: 8px 12px; font-size: 0.8rem; width: auto; }
+
+    /* Score Raideur */
+    .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 8px; }
+    .scale button {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 0;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .scale button.active {
+      background: var(--accent);
+      color: #061320;
+      border-color: var(--accent);
+    }
+
+    /* Player */
+    .svg-stage {
+      background: #090d14;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px;
+      margin: 10px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .timer-big {
+      font-size: 2.3rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+    .phase-pill {
+      margin-top: 4px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+    }
+    .cue-box {
+      border-radius: 11px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      font-size: 0.84rem;
+      line-height: 1.42;
+    }
+    .cue-good { background: rgba(52, 211, 153, 0.1); border-left: 3px solid var(--green); }
+    .cue-bad  { background: rgba(248, 113, 113, 0.1); border-left: 3px solid var(--red); }
+    .cue-feel { background: rgba(56, 189, 248, 0.1); border-left: 3px solid var(--accent); }
+    .cue-title { font-weight: 700; display: block; margin-bottom: 2px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    /* Calendar Grid */
+    .cal-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 10px; }
+    .cal-day {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+    .cal-day.done-full { background: var(--green); color: #042117; font-weight: 800; border-color: var(--green); }
+    .cal-day.done-express { background: var(--amber); color: #1f1202; font-weight: 800; border-color: var(--amber); }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #0f1624;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 8px 6px 12px;
+      z-index: 30;
+    }
+    nav button {
+      background: none; border: none; color: var(--muted);
+      font-size: 0.75rem; font-weight: 600;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    nav button.active { color: var(--accent); }
+    .hidden { display: none !important; }
+    .switch-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .switch-row:last-child { border-bottom: none; }
+    input[type="time"] {
+      background: var(--card-2); color: var(--text); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 10px; font-size: 0.9rem;
+    }
+    input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .tag {
+      padding: 6px 10px; border-radius: 999px; font-size: 0.78rem;
+      background: var(--card-2); border: 1px solid var(--border); color: var(--text);
+    }
+    .tag.active { background: var(--accent); color: #061320; font-weight: 700; border-color: var(--accent); }
+
+    /* SVG Animations */
+    @keyframes breatheRing {
+      0%, 100% { transform: scale(0.92); opacity: 0.65; }
+      40% { transform: scale(1.06); opacity: 1; }
+    }
+    @keyframes domeMove {
+      0%, 100% { transform: translateY(-10px); }
+      45% { transform: translateY(12px); }
+    }
+    @keyframes t6Pivot {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(-6deg); }
+    }
+    .anim-ring { transform-origin: 150px 95px; animation: breatheRing 12s infinite ease-in-out; }
+    .anim-dome { animation: domeMove 12s infinite ease-in-out; }
+    .anim-pivot { transform-origin: 130px 100px; animation: t6Pivot 8s infinite ease-in-out; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Reset T6–T7 & Anneau Costal</h1>
+    <div class="subtitle" id="todayStatus">Prêt pour la séance du jour</div>
+  </div>
+  <div class="badge" id="streakBadge">0 j</div>
+</header>
+
+<!-- VUE 1 : ACCUEIL & LANCEMENT -->
+<main class="container" id="view-home">
+  <div class="card">
+    <h2>1. Indice de Raideur « Ceinture T6–T7 » (Avant)</h2>
+    <div style="font-size:0.8rem;color:var(--muted);">1 = Anneau souple et libre · 5 = Étau sterno-costal verrouillé</div>
+    <div class="scale" id="preScoreScale">
+      <button onclick="setPreScore(1)">1</button>
+      <button onclick="setPreScore(2)">2</button>
+      <button onclick="setPreScore(3)" class="active">3</button>
+      <button onclick="setPreScore(4)">4</button>
+      <button onclick="setPreScore(5)">5</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2. Lancer le Protocole</h2>
+    <p style="font-size:0.82rem;color:var(--muted);margin:0 0 12px;">
+      Synchronisation haptique (vibrations Pixel 7) + métronome respiratoire doux pour pratiquer les yeux fermés.
+    </p>
+    <button class="btn btn-primary" style="margin-bottom:10px;" onclick="startProtocol('full')">
+      ▶ Protocole Complet (20 min · 5 étapes)
+    </button>
+    <button class="btn btn-express" onclick="startProtocol('express')">
+      ⚡ Mode Express Terrain / Post-Vélo (6 min)
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Aperçu des Étapes du Protocole</h2>
+    <div id="protocolPreview" style="font-size:0.82rem;color:var(--muted);line-height:1.55;"></div>
+  </div>
+</main>
+
+<!-- VUE 2 : LECTEUR GUIDÉ -->
+<main class="container hidden" id="view-player">
+  <div class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:6px;">
+      <span id="stepCounter" style="font-size:0.78rem;color:var(--accent);font-weight:700;">ÉTAPE 1 / 5</span>
+      <button class="btn btn-ghost btn-sm" onclick="abortSession()">✕ Quitter</button>
+    </div>
+    <h2 id="exoTitle" style="font-size:1.05rem;">Titre Exercice</h2>
+    <div id="exoSubtitle" style="font-size:0.78rem;color:var(--muted);">Cible anatomique</div>
+
+    <div class="svg-stage">
+      <div id="svgContainer" style="width:100%;max-width:300px;height:185px;"></div>
+      <div class="timer-big" id="exoTimer">04:00</div>
+      <div class="phase-pill" id="breathCue">Cycle respiratoire calme</div>
+    </div>
+
+    <div class="row" style="margin-bottom:12px;">
+      <button class="btn btn-ghost" id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
+      <button class="btn btn-primary" onclick="nextExercise()">Suivant ⏭</button>
+    </div>
+
+    <div class="cue-box cue-good">
+      <span class="cue-title" style="color:var(--green);">✓ Comment bien faire</span>
+      <span id="cueGood"></span>
+    </div>
+    <div class="cue-box cue-bad">
+      <span class="cue-title" style="color:var(--red);">✕ À ne pas faire</span>
+      <span id="cueBad"></span>
+    </div>
+    <div class="cue-box cue-feel">
+      <span class="cue-title" style="color:var(--accent);">◎ Ressenti recherché</span>
+      <span id="cueFeel"></span>
+    </div>
+  </div>
+</main>
+
+<!-- VUE 3 : BILAN POST-SÉANCE -->
+<main class="container hidden" id="view-finish">
+  <div class="card">
+    <h2>Séance Terminée — Bilan Anneau T6–T7</h2>
+    <div style="font-size:0.82rem;color:var(--muted);margin-bottom:6px;">Raideur de la ceinture T6–T7 APRÈS la séance :</div>
+    <div class="scale" id="postScoreScale">
+      <button onclick="setPostScore(1)" class="active">1</button>
+      <button onclick="setPostScore(2)">2</button>
+      <button onclick="setPostScore(3)">3</button>
+      <button onclick="setPostScore(4)">4</button>
+      <button onclick="setPostScore(5)">5</button>
+    </div>
+
+    <div style="font-size:0.82rem;color:var(--muted);margin-top:14px;">Ressenti dominant :</div>
+    <div class="tag-list" id="feelTags">
+      <button class="tag active" onclick="toggleTag(this)">Ceinture relâchée</button>
+      <button class="tag" onclick="toggleTag(this)">T6–T7 fluide</button>
+      <button class="tag" onclick="toggleTag(this)">Flanc gauche ouvert</button>
+      <button class="tag" onclick="toggleTag(this)">Raideur persistante</button>
+      <button class="tag" onclick="toggleTag(this)">Post-vélo / Froid</button>
+    </div>
+
+    <button class="btn btn-green" style="margin-top:16px;" onclick="saveCompletedSession()">
+      ✓ Enregistrer dans la mémoire
+    </button>
+  </div>
+</main>
+
+<!-- VUE 4 : HISTORIQUE & MÉMOIRE -->
+<main class="container hidden" id="view-history">
+  <div class="card">
+    <div class="row" style="justify-content:space-between;">
+      <h2>Mémoire des 30 derniers jours</h2>
+      <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Export JSON</button>
+    </div>
+    <div style="font-size:0.76rem;color:var(--muted);margin-top:4px;">
+      <span style="color:var(--green);">■</span> Complet (20 min) &nbsp;
+      <span style="color:var(--amber);">■</span> Express (6 min)
+    </div>
+    <div class="cal-grid" id="calendarGrid"></div>
+  </div>
+
+  <div class="card">
+    <h2>Journal des Séances</h2>
+    <div id="historyList" style="font-size:0.82rem;color:var(--muted);">Aucune séance enregistrée.</div>
+  </div>
+</main>
+
+<!-- VUE 5 : RAPPELS & NOTIFICATIONS PIXEL 7 -->
+<main class="container hidden" id="view-settings">
+  <div class="card">
+    <h2>Notifications & Rappels Intelligents</h2>
+    <p style="font-size:0.8rem;color:var(--muted);margin-top:0;">
+      Le rappel du soir ne se déclenche <strong>que si la séance du matin n'a pas été validée</strong>.
+    </p>
+
+    <div class="switch-row">
+      <div>
+        <div style="font-weight:700;font-size:0.88rem;">Notification du matin</div>
+        <div style="font-size:0.75rem;color:var(--muted);">Déverrouillage quotidien au réveil</div>
+      </div>
+      <input type="time" id="morningTime" value="07:30" onchange="saveSettings()" />
+    </div>
+
+    <div class="switch-row">
+      <div>
+        <div style="font-weight:700;font-size:0.88rem;">Relance conditionnelle le soir</div>
+        <div style="font-size:0.75rem;color:var(--muted);">Optionnel · Uniquement si non fait le matin</div>
+      </div>
+      <input type="checkbox" id="eveningEnabled" checked onchange="saveSettings()" />
+    </div>
+
+    <div class="switch-row" id="eveningTimeRow">
+      <div style="font-size:0.84rem;color:var(--muted);">Heure de relance du soir</div>
+      <input type="time" id="eveningTime" value="20:00" onchange="saveSettings()" />
+    </div>
+
+    <div class="switch-row">
+      <div>
+        <div style="font-weight:700;font-size:0.88rem;">Vibrations haptiques & Audio doux</div>
+        <div style="font-size:0.75rem;color:var(--muted);">Guidage des cycles les yeux fermés</div>
+      </div>
+      <input type="checkbox" id="hapticEnabled" checked onchange="saveSettings()" />
+    </div>
+
+    <button class="btn btn-primary" style="margin-top:12px;" onclick="requestNotifPermission()">
+      🔔 Autoriser les Notifications Push sur Pixel 7
+    </button>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="testNotification()">
+      Tester une notification maintenant
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Sécurité Android / Pixel 7 (100 % Fiable)</h2>
+    <p style="font-size:0.8rem;color:var(--muted);margin-top:0;">
+      Android met parfois en veille les timers web en arrière-plan. Génère en 1 tap les alarmes natives dans ton Agenda Google :
+    </p>
+    <button class="btn btn-express" onclick="downloadICS()">
+      📅 Ajouter les rappels au Calendrier Google (.ics)
+    </button>
+  </div>
+</main>
+
+<nav>
+  <button id="nav-home" class="active" onclick="switchTab('home')">
+    <span>◉</span><span>Protocole</span>
+  </button>
+  <button id="nav-history" onclick="switchTab('history')">
+    <span>▤</span><span>Mémoire</span>
+  </button>
+  <button id="nav-settings" onclick="switchTab('settings')">
+    <span>⚙</span><span>Rappels</span>
+  </button>
+</nav>
+
+<script>
+// --- DONNÉES DES EXERCICES + SVG VECTORIELS ANIMÉS ---
+const SVGS = {
+  antLat: `<svg viewBox="0 0 300 185" width="100%" height="100%">
+    <ellipse cx="150" cy="95" rx="95" ry="58" fill="none" stroke="#38bdf8" stroke-width="4" class="anim-ring"/>
+    <rect x="142" y="42" width="16" height="82" rx="8" fill="#e2e8f0" opacity="0.85"/>
+    <path d="M142 65 Q105 72 82 95 M158 65 Q195 72 218 95" stroke="#94a3b8" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M142 92 Q95 102 76 125 M158 92 Q205 102 224 125" stroke="#34d399" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <circle cx="132" cy="95" r="9" fill="#f59e0b" opacity="0.9"/>
+    <circle cx="84" cy="112" r="10" fill="#f59e0b" opacity="0.9"/>
+    <text x="150" y="172" text-anchor="middle" fill="#94a3b8" font-size="11">Sternum · Cartilages 6–7 · Flanc gauche</text>
+  </svg>`,
+  peanut: `<svg viewBox="0 0 300 185" width="100%" height="100%">
+    <line x1="35" y1="145" x2="265" y2="145" stroke="#334155" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="130" cy="133" r="11" fill="#f59e0b"/>
+    <g class="anim-pivot">
+      <path d="M70 132 Q130 120 215 105" stroke="#38bdf8" stroke-width="9" fill="none" stroke-linecap="round"/>
+      <circle cx="130" cy="121" r="6" fill="#34d399"/>
+    </g>
+    <text x="130" y="95" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="bold">T6–T7 (Bassin ancré)</text>
+    <text x="150" y="172" text-anchor="middle" fill="#94a3b8" font-size="11">Double balle bilatérale · Zéro cambrure lombaire</text>
+  </svg>`,
+  zoa9090: `<svg viewBox="0 0 300 185" width="100%" height="100%">
+    <rect x="65" y="45" width="170" height="95" rx="22" fill="none" stroke="#38bdf8" stroke-width="3"/>
+    <path d="M72 95 Q150 58 228 95" fill="none" stroke="#34d399" stroke-width="6" stroke-linecap="round" class="anim-dome"/>
+    <path d="M85 132 Q150 118 215 132" fill="none" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+    <text x="150" y="34" text-anchor="middle" fill="#38bdf8" font-size="11">Expansion 360° Flancs & Dos</text>
+    <text x="150" y="172" text-anchor="middle" fill="#94a3b8" font-size="11">Diaphragme (vert) ↔ Plancher pelvien (ambre)</text>
+  </svg>`,
+  bucket: `<svg viewBox="0 0 300 185" width="100%" height="100%">
+    <ellipse cx="150" cy="95" rx="68" ry="52" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="5 5"/>
+    <ellipse cx="150" cy="95" rx="92" ry="56" fill="none" stroke="#34d399" stroke-width="4" class="anim-ring"/>
+    <path d="M55 95 L80 95 M220 95 L245 95" stroke="#38bdf8" stroke-width="4" stroke-linecap="round"/>
+    <text x="150" y="99" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="bold">Anse de seau 6–10</text>
+    <text x="150" y="172" text-anchor="middle" fill="#94a3b8" font-size="11">Ouverture latérale sur expiration contrôlée</text>
+  </svg>`,
+  vagal: `<svg viewBox="0 0 300 185" width="100%" height="100%">
+    <circle cx="150" cy="92" r="54" fill="rgba(56,189,248,0.12)" stroke="#38bdf8" stroke-width="3" class="anim-ring"/>
+    <circle cx="150" cy="92" r="28" fill="rgba(52,211,153,0.2)" stroke="#34d399" stroke-width="3" class="anim-ring"/>
+    <text x="150" y="96" text-anchor="middle" fill="#f1f5f9" font-size="12" font-weight="700">4s IN · 8s EX</text>
+    <text x="150" y="172" text-anchor="middle" fill="#94a3b8" font-size="11">Bascule parasympathique & anneau souple</text>
+  </svg>`
+};
+
+const EXERCISES_DB = {
+  antLat: {
+    id: 'antLat',
+    title: '1. Libération Antéro-Latérale Sterno-Costale',
+    target: 'Bords du sternum · Cartilages 6–7 · Flanc gauche',
+    durationSec: 240,
+    cycle: { inhale: 4, hold: 0, exhale: 6 },
+    svg: SVGS.antLat,
+    good: 'Presse doucement avec la pulpe des doigts le long des bords latéraux du sternum, puis place une balle souple sur le flanc gauche (espace intercostal 6–7). Associe chaque pression à une expiration lente.',
+    bad: 'Ne jamais appuyer violemment directement sur un cartilage costal sensible ou sur la pointe xiphoïde. Ne bloque pas ta respiration.',
+    feel: 'Sensation de fonte progressive de la « boucle de ceinture » devant le sternum et élargissement doux du flanc gauche.'
+  },
+  peanut: {
+    id: 'peanut',
+    title: '2. Décompression Charnière T6–T7 (Peanut Ball)',
+    target: 'Articulations costo-vertébrales T6–T7 & érecteurs moyens',
+    durationSec: 240,
+    cycle: { inhale: 5, hold: 0, exhale: 6 },
+    svg: SVGS.peanut,
+    good: 'Place la double balle de part et d’autre des épineuses T6–T7. Garde le bassin et les lombaires plaqués au sol, menton rentré (nuque longue). Réalise 8 micro-extensions sur l’inspiration puis relâche 2 min.',
+    bad: 'Ne place jamais la balle sur l’os central (épineuse). Ne cambre jamais le bas du dos pour chercher de l’amplitude.',
+    feel: 'Pivot précis et localisé entre les omoplates, déverrouillage arrière de l’anneau thoracique sans tension cervicale.'
+  },
+  zoa9090: {
+    id: 'zoa9090',
+    title: '3. Piston Diaphragmatique & ZOA 90/90',
+    target: 'Dôme diaphragmatique · Côtes basses 6–12 · Plancher pelvien',
+    durationSec: 300,
+    cycle: { inhale: 4, hold: 3, exhale: 8 },
+    svg: SVGS.zoa9090,
+    good: 'Pieds sur support (hanches/genoux à 90°). Expire 8 s en remontant le plancher pelvien (« ascenseur ») et en abaissant les côtes basses. Apnée 3 s. Inspire 4 s par le nez dans les flancs et le dos en gardant une légère retenue du bas-ventre (« trampoline »).',
+    bad: 'Ne soulève ni le sternum ni les clavicules à l’inspiration. Zéro crispation des scalènes, de la gorge ou de la mâchoire.',
+    feel: 'Cage thoracique qui s’ouvre à 360° latéralement et dans le dos, nuque lourde et gorge totalement libre.'
+  },
+  bucket: {
+    id: 'bucket',
+    title: '4. Ouverture Active en « Anse de Seau »',
+    target: 'Côtes moyennes/basses · Grand dentelé · Rotation thoracique',
+    durationSec: 240,
+    cycle: { inhale: 4, hold: 0, exhale: 6 },
+    svg: SVGS.bucket,
+    good: 'Allongé sur le côté (genoux fléchis à 90° l’un sur l’autre), ouvre le bras supérieur sur une expiration lente en suivant la main du regard (2 × 6 reps/côté).',
+    bad: 'Ne laisse pas le genou supérieur décoller (sinon la rotation part dans les lombaires) et ne hausse pas l’épaule vers l’oreille.',
+    feel: 'Étirement spiralé fluide des espaces intercostaux 6–7 de l’arrière vers l’avant.'
+  },
+  vagal: {
+    id: 'vagal',
+    title: '5. Intégration Autonome & Décharge',
+    target: 'Système nerveux autonome & tonus intercostal basal',
+    durationSec: 180,
+    cycle: { inhale: 4, hold: 0, exhale: 8 },
+    svg: SVGS.vagal,
+    good: 'Allongé confortablement, respiration 100 % nasale fluide : 4 s d’inspiration douce, 8 s d’expiration relâchée sans forcer la fin de souffle.',
+    bad: 'Ne force pas l’expiration jusqu’à créer un réflexe de lutte ou d’essoufflement.',
+    feel: 'Chaleur diffuse autour de toute la ceinture T6–T7, sensation d’anneau élastique et calme profond.'
+  },
+  expressSide: {
+    id: 'expressSide',
+    title: '1. Décharge Latérale & Sternale Express',
+    target: 'Intercostaux 6–7 & jonction sternale (post-vélo)',
+    durationSec: 150,
+    cycle: { inhale: 4, hold: 0, exhale: 6 },
+    svg: SVGS.antLat,
+    good: 'Allongé sur le côté droit (flanc gauche vers le plafond, bras gauche au-dessus de la tête) ou auto-relâchement doux du flanc gauche avec longues expirations.',
+    bad: 'Ne tire pas sur l’épaule gauche si le trapèze se contracte.',
+    feel: 'Ouverture immédiate des côtes gauches comprimées par la posture vélo.'
+  },
+  express9090: {
+    id: 'express9090',
+    title: '2. Reset Piston 90/90 Express',
+    target: 'Couplage Diaphragme / Côtes basses / Plancher pelvien',
+    durationSec: 210,
+    cycle: { inhale: 4, hold: 3, exhale: 8 },
+    svg: SVGS.zoa9090,
+    good: 'Jambes surélevées à 90°. 8 cycles de 8 s expiration (abaissement costal) → 3 s apnée → 4 s inspiration dans les flancs et le dos.',
+    bad: 'Ne hausse pas les épaules à l’inspiration.',
+    feel: 'Chute immédiate de la pression thoracique et levée de l’étau T6–T7.'
+  }
+};
+
+const PROTOCOLS = {
+  full: ['antLat', 'peanut', 'zoa9090', 'bucket', 'vagal'],
+  express: ['expressSide', 'express9090']
+};
+
+// --- ÉTAT GLOBAL ---
+let state = {
+  mode: 'full',
+  queue: [],
+  currentIndex: 0,
+  remainingSec: 0,
+  elapsedInExo: 0,
+  paused: false,
+  timerId: null,
+  preScore: 3,
+  postScore: 1,
+  lastPhase: ''
+};
+
+// --- AUDIO & HAPTIQUE PIXEL 7 ---
+let audioCtx = null;
+function triggerFeedback(type) {
+  const settings = getSettings();
+  if (!settings.hapticEnabled) return;
+  if (navigator.vibrate) {
+    if (type === 'inhale') navigator.vibrate([45]);
+    if (type === 'hold') navigator.vibrate([25, 40, 25]);
+    if (type === 'exhale') navigator.vibrate([90]);
+    if (type === 'done') navigator.vibrate([120, 60, 120]);
+  }
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = type === 'inhale' ? 432 : (type === 'exhale' ? 324 : 260);
+    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.05, audioCtx.currentTime + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.36);
+  } catch (e) {}
+}
+
+// --- NAVIGATION ---
+function switchTab(tab) {
+  ['home', 'player', 'finish', 'history', 'settings'].forEach(v => {
+    document.getElementById('view-' + v).classList.add('hidden');
+  });
+  ['home', 'history', 'settings'].forEach(n => {
+    document.getElementById('nav-' + n).classList.remove('active');
+  });
+  document.getElementById('view-' + tab).classList.remove('hidden');
+  if (document.getElementById('nav-' + tab)) {
+    document.getElementById('nav-' + tab).classList.add('active');
+  }
+  if (tab === 'history') renderHistory();
+}
+
+// --- SCORES ---
+function setPreScore(val) {
+  state.preScore = val;
+  document.querySelectorAll('#preScoreScale button').forEach((b, i) => {
+    b.classList.toggle('active', i + 1 === val);
+  });
+}
+function setPostScore(val) {
+  state.postScore = val;
+  document.querySelectorAll('#postScoreScale button').forEach((b, i) => {
+    b.classList.toggle('active', i + 1 === val);
+  });
+}
+function toggleTag(el) {
+  el.classList.toggle('active');
+}
+
+// --- LECTEUR DE SÉANCE ---
+function startProtocol(mode) {
+  state.mode = mode;
+  state.queue = PROTOCOLS[mode].map(id => EXERCISES_DB[id]);
+  state.currentIndex = 0;
+  state.paused = false;
+  switchTab('player');
+  loadExercise(0);
+}
+
+function loadExercise(idx) {
+  clearInterval(state.timerId);
+  if (idx >= state.queue.length) {
+    triggerFeedback('done');
+    switchTab('finish');
+    return;
+  }
+  state.currentIndex = idx;
+  const exo = state.queue[idx];
+  state.remainingSec = exo.durationSec;
+  state.elapsedInExo = 0;
+  state.lastPhase = '';
+
+  document.getElementById('stepCounter').textContent = `ÉTAPE ${idx + 1} / ${state.queue.length}`;
+  document.getElementById('exoTitle').textContent = exo.title;
+  document.getElementById('exoSubtitle').textContent = exo.target;
+  document.getElementById('svgContainer').innerHTML = exo.svg;
+  document.getElementById('cueGood').textContent = exo.good;
+  document.getElementById('cueBad').textContent = exo.bad;
+  document.getElementById('cueFeel').textContent = exo.feel;
+  document.getElementById('pauseBtn').textContent = '⏸ Pause';
+
+  updateTimerUI();
+  state.timerId = setInterval(tick, 1000);
+}
+
+function tick() {
+  if (state.paused) return;
+  state.remainingSec--;
+  state.elapsedInExo++;
+  if (state.remainingSec <= 0) {
+    loadExercise(state.currentIndex + 1);
+    return;
+  }
+  updateTimerUI();
+}
+
+function updateTimerUI() {
+  const m = String(Math.floor(state.remainingSec / 60)).padStart(2, '0');
+  const s = String(state.remainingSec % 60).padStart(2, '0');
+  document.getElementById('exoTimer').textContent = `${m}:${s}`;
+
+  const exo = state.queue[state.currentIndex];
+  const { inhale, hold, exhale } = exo.cycle;
+  const totalCycle = inhale + hold + exhale;
+  const pos = state.elapsedInExo % totalCycle;
+
+  let phase = '';
+  let label = '';
+  if (pos < inhale) {
+    phase = 'inhale';
+    label = `INSPIRE 360° (${inhale - pos} s)`;
+  } else if (pos < inhale + hold) {
+    phase = 'hold';
+    label = `PAUSE POUMONS PLEINS (${inhale + hold - pos} s)`;
+  } else {
+    phase = 'exhale';
+    label = `EXPIRE LENTEMENT (${totalCycle - pos} s)`;
+  }
+
+  document.getElementById('breathCue').textContent = label;
+  if (phase !== state.lastPhase) {
+    state.lastPhase = phase;
+    triggerFeedback(phase);
+  }
+}
+
+function togglePause() {
+  state.paused = !state.paused;
+  document.getElementById('pauseBtn').textContent = state.paused ? '▶ Reprendre' : '⏸ Pause';
+}
+
+function nextExercise() {
+  loadExercise(state.currentIndex + 1);
+}
+
+function abortSession() {
+  clearInterval(state.timerId);
+  switchTab('home');
+}
+
+// --- MÉMOIRE LOCALE (LOCALSTORAGE) ---
+function getLogs() {
+  return JSON.parse(localStorage.getItem('t6t7_logs') || '[]');
+}
+
+function todayISO() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function saveCompletedSession() {
+  const tags = Array.from(document.querySelectorAll('#feelTags .tag.active')).map(t => t.textContent);
+  const logs = getLogs();
+  const entry = {
+    date: todayISO(),
+    timestamp: new Date().toISOString(),
+    hour: new Date().getHours(),
+    mode: state.mode,
+    durationMin: state.mode === 'full' ? 20 : 6,
+    preScore: state.preScore,
+    postScore: state.postScore,
+    tags
+  };
+  logs.unshift(entry);
+  localStorage.setItem('t6t7_logs', JSON.stringify(logs));
+  refreshHeaderStats();
+  switchTab('history');
+}
+
+function refreshHeaderStats() {
+  const logs = getLogs();
+  const today = todayISO();
+  const doneToday = logs.find(l => l.date === today);
+  const statusEl = document.getElementById('todayStatus');
+
+  if (doneToday) {
+    statusEl.innerHTML = `<span style="color:var(--green);">✓ Fait aujourd'hui (${doneToday.mode === 'full' ? '20 min' : '6 min'}) · Relance soir annulée</span>`;
+  } else {
+    statusEl.textContent = 'Non exécuté aujourd’hui';
+  }
+
+  // Calcul Streak
+  const uniqueDates = [...new Set(logs.map(l => l.date))].sort().reverse();
+  let streak = 0;
+  let cursor = new Date();
+  if (!uniqueDates.includes(today)) cursor.setDate(cursor.getDate() - 1);
+
+  while (true) {
+    const iso = cursor.getFullYear() + '-' + String(cursor.getMonth() + 1).padStart(2, '0') + '-' + String(cursor.getDate()).padStart(2, '0');
+    if (uniqueDates.includes(iso)) {
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+  document.getElementById('streakBadge').textContent = `${streak} j`;
+}
+
+function renderHistory() {
+  const logs = getLogs();
+  const byDate = {};
+  logs.forEach(l => {
+    if (!byDate[l.date] || l.mode === 'full') byDate[l.date] = l;
+  });
+
+  // Grille 30 jours
+  const grid = document.getElementById('calendarGrid');
+  grid.innerHTML = '';
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const iso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    cell.textContent = d.getDate();
+    if (byDate[iso]) {
+      cell.classList.add(byDate[iso].mode === 'full' ? 'done-full' : 'done-express');
+    }
+    grid.appendChild(cell);
+  }
+
+  // Liste détaillée
+  const list = document.getElementById('historyList');
+  if (!logs.length) {
+    list.textContent = 'Aucune séance enregistrée pour le moment.';
+    return;
+  }
+  list.innerHTML = logs.slice(0, 20).map(l => `
+    <div style="padding:9px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;color:var(--text);font-weight:700;">
+        <span>${l.date} · ${l.mode === 'full' ? 'Complet 20 min' : 'Express 6 min'}</span>
+        <span style="color:var(--accent);">Raideur ${l.preScore}/5 → ${l.postScore}/5</span>
+      </div>
+      <div style="font-size:0.76rem;margin-top:3px;">${l.tags.join(' · ') || 'Sans note'}</div>
+    </div>
+  `).join('');
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(getLogs(), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `reset-t6t7-historique-${todayISO()}.json`;
+  a.click();
+}
+
+// --- NOTIFICATIONS & RAPPELS ---
+function getSettings() {
+  return JSON.parse(localStorage.getItem('t6t7_settings') || JSON.stringify({
+    morningTime: '07:30',
+    eveningEnabled: true,
+    eveningTime: '20:00',
+    hapticEnabled: true
+  }));
+}
+
+function saveSettings() {
+  const s = {
+    morningTime: document.getElementById('morningTime').value,
+    eveningEnabled: document.getElementById('eveningEnabled').checked,
+    eveningTime: document.getElementById('eveningTime').value,
+    hapticEnabled: document.getElementById('hapticEnabled').checked
+  };
+  localStorage.setItem('t6t7_settings', JSON.stringify(s));
+  document.getElementById('eveningTimeRow').style.opacity = s.eveningEnabled ? '1' : '0.4';
+}
+
+function loadSettingsUI() {
+  const s = getSettings();
+  document.getElementById('morningTime').value = s.morningTime;
+  document.getElementById('eveningEnabled').checked = s.eveningEnabled;
+  document.getElementById('eveningTime').value = s.eveningTime;
+  document.getElementById('hapticEnabled').checked = s.hapticEnabled;
+  document.getElementById('eveningTimeRow').style.opacity = s.eveningEnabled ? '1' : '0.4';
+}
+
+async function requestNotifPermission() {
+  if (!('Notification' in window)) {
+    alert('Notifications non supportées sur ce navigateur.');
+    return;
+  }
+  const res = await Notification.requestPermission();
+  if (res === 'granted') {
+    new Notification('Reset T6–T7 activé', {
+      body: 'Rappel du matin configuré (et relance du soir conditionnelle selon ton réglage).',
+      icon: 'icon.svg'
+    });
+  }
+}
+
+function testNotification() {
+  if (Notification.permission === 'granted') {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification('Reset T6–T7 & Anneau Costal', {
+        body: 'Déverrouille la charnière T6–T7 et libère l’anneau sterno-costal (20 min ou Express 6 min).',
+        icon: 'icon.svg',
+        vibrate: [100, 50, 100]
+      });
+    });
+  } else {
+    requestNotifPermission();
+  }
+}
+
+// Vérification périodique tant que l'app est active ou réveillée
+setInterval(() => {
+  if (Notification.permission !== 'granted') return;
+  const s = getSettings();
+  const now = new Date();
+  const hhmm = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  const today = todayISO();
+  const doneToday = getLogs().some(l => l.date === today);
+  const sentKey = `notif_sent_${today}_${hhmm}`;
+
+  if (localStorage.getItem(sentKey)) return;
+
+  if (hhmm === s.morningTime && !doneToday) {
+    localStorage.setItem(sentKey, '1');
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification('Matin : Reset T6–T7 & Anneau Costal', {
+        body: '20 min (ou Express 6 min) pour ouvrir la cage thoracique avant la journée.',
+        icon: 'icon.svg'
+      });
+    });
+  }
+
+  if (s.eveningEnabled && hhmm === s.eveningTime && !doneToday) {
+    localStorage.setItem(sentKey, '1');
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification('Rattrapage Soir : Reset T6–T7', {
+        body: 'Séance du matin non validée : lève la ceinture sterno-costale avant le sommeil.',
+        icon: 'icon.svg'
+      });
+    });
+  }
+}, 25000);
+
+// Génération fichier .ics pour Google Calendar (Fiabilité 100% Android)
+function downloadICS() {
+  const s = getSettings();
+  const [mh, mm] = s.morningTime.split(':');
+  const [eh, em] = s.eveningTime.split(':');
+  const d = new Date();
+  const ymd = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+
+  let ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Reset T6-T7 PWA//FR',
+    'BEGIN:VEVENT',
+    `UID:reset-t6t7-morning-${Date.now()}@pwa`,
+    `DTSTAMP:${ymd}T060000Z`,
+    `DTSTART:${ymd}T${mh}${mm}00`,
+    'DURATION:PT20M',
+    'RRULE:FREQ=DAILY',
+    'SUMMARY:Reset T6–T7 & Anneau Costal (Matin)',
+    'DESCRIPTION:Protocole complet 20 min ou Mode Express 6 min.',
+    'BEGIN:VALARM',
+    'TRIGGER:-PT0M',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:Reset T6-T7',
+    'END:VALARM',
+    'END:VEVENT'
+  ];
+
+  if (s.eveningEnabled) {
+    ics.push(
+      'BEGIN:VEVENT',
+      `UID:reset-t6t7-evening-${Date.now()}@pwa`,
+      `DTSTAMP:${ymd}T060000Z`,
+      `DTSTART:${ymd}T${eh}${em}00`,
+      'DURATION:PT15M',
+      'RRULE:FREQ=DAILY',
+      'SUMMARY:Rattrapage Reset T6–T7 (Si non fait ce matin)',
+      'DESCRIPTION:Déverrouillage anneau costal & ZOA 90/90 avant le sommeil.',
+      'BEGIN:VALARM',
+      'TRIGGER:-PT0M',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Rattrapage T6-T7',
+      'END:VALARM',
+      'END:VEVENT'
+    );
+  }
+  ics.push('END:VCALENDAR');
+
+  const blob = new Blob([ics.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rappels-reset-t6t7.ics';
+  a.click();
+}
+
+// --- INITIALISATION ---
+function init() {
+  document.getElementById('protocolPreview').innerHTML = PROTOCOLS.full.map(id => {
+    const e = EXERCISES_DB[id];
+    return `<div>• <strong style="color:var(--text);">${e.title}</strong> (${Math.round(e.durationSec/60)} min)</div>`;
+  }).join('');
+
+  loadSettingsUI();
+  refreshHeaderStats();
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+}
+init();
+</script>
+</body>
+</html>
